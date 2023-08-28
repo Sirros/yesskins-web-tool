@@ -1,0 +1,75 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.mt10 {
+  margin-top: 20px;
+}
+
+.mt15 {
+  margin-top: 20px;
+}
+
+.mt20 {
+  margin-top: 20px;
+}
+
+.mr10 {
+  margin-top: 20px;
+}
+
+.mr10 {
+  margin-top: 20px;
+}
+
+.mr15 {
+  margin-top: 20px;
+}
+
+.mr20 {
+  margin-top: 20px;
+}
+
+.pd10 {
+  padding: 10px;
+}
+
+.pd15 {
+  padding: 15px;
+}
+
+.pd20 {
+  padding: 20px;
+}
+
+.blod {
+  color: #000;
+  font-weight: 700;
+}
+
+.fff {
+  color: #fff;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-row {
+  display: flex;
+  align-items: center;
+}
+
+.flex-row-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
