@@ -55,7 +55,9 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleCloseDialog">取 消</el-button>
-        <el-button type="primary" @click="handleRegister">提 交</el-button>
+        <el-button type="primary" @click="handleRegisterSubmit"
+          >提 交</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -66,6 +68,14 @@ export default {
   name: "LoginPage",
   components: {},
   data() {
+    const validatePswRepeat = (rule, value, callback) => {
+      if (!value) callback(new Error("请重复密码"));
+      if (value != this.registerForm.pswd) {
+        callback(new Error("密码不一致，请重试"));
+      } else {
+        callback();
+      }
+    };
     return {
       dialogVisible: false,
       btnLoading: false,
@@ -86,7 +96,9 @@ export default {
       registerRules: {
         name: [{ required: true, message: "请输入账号", trigger: "change" }],
         pswd: [{ required: true, message: "请输入密码", trigger: "change" }],
-        rept: [{ required: true, message: "请输入密码", trigger: "change" }],
+        rept: [
+          { required: true, trigger: "change", validator: validatePswRepeat },
+        ],
       },
     };
   },
@@ -101,6 +113,7 @@ export default {
           //  window.userInfo = {}
           // })
           // .catch()
+          localStorage.setItem("user", { isLogin: true });
           this.$router.push("/");
         } else {
           console.log("error submit!!");
@@ -113,6 +126,22 @@ export default {
     },
     handleCloseDialog() {
       this.dialogVisible = false;
+    },
+    handleRegisterSubmit() {
+      this.$refs.registerForm.validate((valid) => {
+        if (valid) {
+          console.log("--");
+          // TODO:
+          // this.$api.register(...form)
+          // .then(() => {
+          //  window.userInfo = {}
+          // })
+          // .catch()
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     // handleSelect(val) {
     //   console.log(val);

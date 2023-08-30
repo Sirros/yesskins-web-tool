@@ -22,5 +22,6 @@ export default {
   height: 56px;
   border-bottom: 1px solid #eee;
   line-height: 56px;
+  text-align: center;
 }
 </style>
