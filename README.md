@@ -36,7 +36,7 @@ nohup serve -p 7777 &
 加了之后会运行在服务器后台
 
 
-进入 /usr/sbin 有个nginx git a
+进入 /usr/sbin 有个nginx git agit 
 ./nginx -s reload 重启nginx服务
 
 
