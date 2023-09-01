@@ -2,13 +2,13 @@
   <div class="login">
     <div class="form-area pd20">
       <el-form ref="form" :model="form" :rules="rules" label-width="60px">
-        <el-form-item prop="usrName">
+        <el-form-item prop="userId">
           <span class="fff" slot="label">账号:</span>
-          <el-input v-model="form.usrName" clearable></el-input>
+          <el-input v-model="form.userId" clearable></el-input>
         </el-form-item>
-        <el-form-item prop="usrPswd">
+        <el-form-item prop="password">
           <span class="fff" slot="label">密码:</span>
-          <el-input v-model="form.usrPswd" show-password clearable></el-input>
+          <el-input v-model="form.password" show-password clearable></el-input>
         </el-form-item>
         <div class="footer">
           <el-button @click="handleRegister" type="info" plain>注册</el-button>
@@ -80,12 +80,14 @@ export default {
       dialogVisible: false,
       btnLoading: false,
       form: {
-        usrName: "",
-        usrPswd: "",
+        userId: "",
+        password: "",
       },
       rules: {
-        usrName: [{ required: true, message: "请输入账号", trigger: "change" }],
-        usrPswd: [{ required: true, message: "请输入密码", trigger: "change" }],
+        userId: [{ required: true, message: "请输入账号", trigger: "change" }],
+        password: [
+          { required: true, message: "请输入密码", trigger: "change" },
+        ],
       },
 
       registerForm: {
@@ -103,45 +105,70 @@ export default {
     };
   },
   methods: {
+    // 登录
     handleLogin() {
       this.loading = true;
       this.$refs.form.validate((valid) => {
         if (valid) {
-          // TODO:
-          // this.$api.login(...form)
-          // .then(() => {
-          //  window.userInfo = {}
-          // })
-          // .catch()
-          localStorage.setItem("user", { isLogin: true });
-          this.$router.push("/");
+          this.handleDoLoginRequest(this.form);
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
+    // 注册
+    handleRegisterSubmit() {
+      this.$refs.registerForm.validate((valid) => {
+        if (valid) {
+          const { name, pswd } = this.registerForm;
+          this.$api
+            .register({ userId: name, password: pswd })
+            .then((res) => {
+              console.log("===register===", res);
+              this.handleDoLoginRequest({ userId: name, password: pswd });
+            })
+            .catch();
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+
+    // 登录请求抽离
+    handleDoLoginRequest(params, isRegister = false) {
+      this.$api
+        .login({ ...params })
+        .then((res) => {
+          console.log("===login===", res);
+          if (isRegister) {
+            this.$message({
+              message: "注册成功，并为您登陆",
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: "登陆成功",
+              type: "success",
+            });
+          }
+          localStorage.setItem("user", {
+            isLogin: true,
+            userId: params.userId,
+          });
+          this.$router.push("/");
+        })
+        .catch((e) => {
+          console.log("登录失败，请重试", e);
+        });
+    },
+
     handleRegister() {
       this.dialogVisible = true;
     },
     handleCloseDialog() {
       this.dialogVisible = false;
-    },
-    handleRegisterSubmit() {
-      this.$refs.registerForm.validate((valid) => {
-        if (valid) {
-          console.log("--");
-          // TODO:
-          // this.$api.register(...form)
-          // .then(() => {
-          //  window.userInfo = {}
-          // })
-          // .catch()
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
     },
     // handleSelect(val) {
     //   console.log(val);

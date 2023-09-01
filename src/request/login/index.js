@@ -1,18 +1,26 @@
 import ajax from "../ajax.js";
 
-// get请求
-const login = (params) => {
+// post请求
+const login = (data) => {
   return ajax({
-    url: "/xxx",
-    params,
+    method: "POST",
+    url: "/userService/login",
+    data,
   });
 };
 
-// post请求
 const register = (data) => {
   return ajax({
     method: "POST",
-    url: "/xxx",
+    url: "/userService/signup",
+    data,
+  });
+};
+
+const logout = (data) => {
+  return ajax({
+    method: "POST",
+    url: "/userService/logout",
     data,
   });
 };
@@ -28,4 +36,5 @@ const register = (data) => {
 export default {
   login,
   register,
+  logout,
 };

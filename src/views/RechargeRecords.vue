@@ -19,6 +19,7 @@
           :loading="btnLoading"
           type="primary"
           :disabled="applyDisabled"
+          @click="handleDoSendEmail"
           >申请返利</el-button
         >
       </div>
@@ -32,26 +33,55 @@ export default {
   components: {},
   data() {
     return {
-      // activeIndex: "1",
-
       applyDisabled: true,
       txtLoading: false,
       btnLoading: false,
+
+      // activeIndex: "1",
     };
   },
   created() {
-    this.handleApply();
+    this.handleGetData();
   },
   methods: {
+    // 请求流水
+    handleGetData() {
+      const user = localStorage.getItem("user");
+      if (!user) return;
+      this.$api
+        .getTopUp({ userId: user.userId })
+        .then((res) => {
+          console.log("===获取流水===", res);
+          this.$message({
+            message: "登陆成功",
+            type: "success",
+          });
+        })
+        .catch((e) => {
+          console.log("登录失败，请重试", e);
+        });
+    },
+
+    // 申请返现
+    handleDoSendEmail() {
+      const EMAIL = "121970263@qq.com";
+      this.$api
+        .sendEmail({ email: EMAIL })
+        .then((res) => {
+          console.log("===申请返利===", res);
+          this.$message({
+            message: "申请成功",
+            type: "success",
+          });
+        })
+        .catch((e) => {
+          console.log("登录失败，请重试", e);
+        });
+    },
+
     // handleSelect(val) {
     //   console.log(val);
     // },
-    handleApply() {
-      this.$message({
-        message: "恭喜你，这是一条成功消息",
-        type: "success",
-      });
-    },
   },
 };
 </script>
