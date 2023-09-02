@@ -12,7 +12,7 @@
             v-model="form.password"
             show-password
             clearable
-            @keyup.enter.native="handleRegister"
+            @keyup.enter.native="handleLogin"
           ></el-input>
         </el-form-item>
         <div class="footer">
