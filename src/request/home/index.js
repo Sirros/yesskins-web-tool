@@ -18,7 +18,27 @@ const sendEmail = (data) => {
   });
 };
 
+// 获取用户列表
+const getUserList = (params) => {
+  console.log(params);
+  return ajax({
+    url: "/userService/userList",
+    params,
+  });
+};
+
+// 更新密码
+const updatePswd = (data) => {
+  return ajax({
+    method: "POST",
+    url: "/userService/modifyUserPwd",
+    data,
+  });
+};
+
 export default {
   getTopUp,
   sendEmail,
+  getUserList,
+  updatePswd,
 };

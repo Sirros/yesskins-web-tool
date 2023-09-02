@@ -165,6 +165,7 @@ export default {
             Local.set("user", {
               isLogin: true,
               userId: params.userId,
+              isAdmin: params.userId === "root", // 判断是否管理员
             });
             this.$router.push("/");
           } else {
