@@ -10,7 +10,7 @@
       <el-menu-item index="2" disabled>抽奖</el-menu-item>
     </el-menu> -->
 
-    <div class="mt20" v-if="!isAdmin">
+    <div v-if="!isAdmin">
       <span>近7天充值总金额：</span>
       <span class="blod" v-loading="txtLoading">{{ money || "0" }}&nbsp;</span
       >元
@@ -32,6 +32,10 @@
         type="info"
       >
       </el-alert>
+
+      <div class="bg-box">
+        <img src="@/assets/homebg.jpg" alt="" />
+      </div>
     </div>
 
     <div v-else>
@@ -126,7 +130,7 @@ export default {
             this.money = res?.data?.data?.totalTopUp;
           } else {
             this.$message({
-              message: res?.data?.message || "获取流水失败，请重试",
+              message: res?.data?.message || "获取流水失败，请三分钟后重试",
               type: "warning",
             });
           }
@@ -254,5 +258,19 @@ export default {
 <style lang="scss" scoped>
 .records {
   text-align: center;
+  // background-image: url("../assets/homebg.jpg");
+  // background-position: center;
+  // background-repeat: no-repeat;
+  // background-size: contain;
+  // height: calc(100vh - 98px);
+  // padding: 20px 0;
+}
+
+.bg-box {
+  margin: 30px auto;
+  width: 40%;
+  img {
+    width: 100%;
+  }
 }
 </style>

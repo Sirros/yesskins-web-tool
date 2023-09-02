@@ -136,7 +136,7 @@ export default {
                 this.handleDoLoginRequest({ userId: name, password: pswd });
               } else {
                 this.$message({
-                  message: "注册失败，请联系管理员",
+                  message: res?.data?.message || "注册失败，请联系管理员",
                   type: "warning",
                 });
               }
@@ -205,7 +205,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("../assets/bg2.jpg");
+  background-image: url("../assets/bg.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: auto auto;
