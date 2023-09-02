@@ -48,3 +48,7 @@ nohup serve -p 7777 &
 nginx命令 
 检查 sudo nginx -t
 重启 sudo service nginx restart
+
+
+自动刷新插件：
+https://chrome.google.com/webstore/detail/auto-refresh-plus-page-mo/hgeljhfekpckiiplhkigfehkdpldcggm/related?utm_source=ext_app_menu
