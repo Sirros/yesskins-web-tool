@@ -8,7 +8,12 @@
         </el-form-item>
         <el-form-item prop="password">
           <span class="fff" slot="label">密码:</span>
-          <el-input v-model="form.password" show-password clearable></el-input>
+          <el-input
+            v-model="form.password"
+            show-password
+            clearable
+            @keyup.enter.native="handleRegister"
+          ></el-input>
         </el-form-item>
         <div class="footer">
           <el-button @click="handleRegister" type="info" plain>注册</el-button>
