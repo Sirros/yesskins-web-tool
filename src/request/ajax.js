@@ -1,4 +1,3 @@
-import config from "./config";
 import Axios from "axios";
 // import router from "../router";
 
@@ -7,7 +6,6 @@ import Axios from "axios";
 // import { Message } from "element-ui";
 
 const axios = Axios.create({
-  baseURL: config.url,
   timeout: 150000, // request timeout
 });
 

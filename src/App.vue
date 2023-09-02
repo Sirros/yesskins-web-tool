@@ -12,6 +12,7 @@
   </div>
 </template>
 <script>
+import { Local } from "@/utils/storage";
 export default {
   computed: {
     isLoginPage() {
@@ -21,16 +22,20 @@ export default {
   methods: {
     // 退出登录
     handleLogout() {
-      const user = window.localStorage.getItem("user");
+      const user = Local.get("user");
+      console.log(user, "===");
       if (!user) return;
       this.$api
         .logout({ userId: user.userId })
-        .then(() => {
-          localStorage.setItem("user", null);
-          this.$message({
-            message: "退出登录成功",
-            type: "success",
-          });
+        .then((res) => {
+          if (res?.data && res?.data?.code === 200) {
+            Local.set("user", "");
+            this.$message({
+              message: "退出登录成功",
+              type: "success",
+            });
+            this.$router.push("/login");
+          }
         })
         .catch();
     },

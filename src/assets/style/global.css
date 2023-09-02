@@ -5,43 +5,47 @@ body {
 }
 
 .mt10 {
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
 .mt15 {
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
 .mt20 {
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
 .mr10 {
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
 .mr10 {
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
 .mr15 {
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
 .mr20 {
-  margin-top: 20px;
+  margin-top: 20px !important;
+}
+
+.mb20 {
+  margin-bottom: 20px !important;
 }
 
 .pd10 {
-  padding: 10px;
+  padding: 10px !important;
 }
 
 .pd15 {
-  padding: 15px;
+  padding: 15px !important;
 }
 
 .pd20 {
-  padding: 20px;
+  padding: 20px !important;
 }
 
 .blod {

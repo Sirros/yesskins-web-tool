@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import { Local } from "@/utils/storage";
 
 // 解决新版 vue-router 报错
 const originalPush = VueRouter.prototype.push;
@@ -34,7 +35,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isLogin = localStorage.getItem("user");
+  const isLogin = Local.get("user");
   if (!isLogin) {
     if (to.path !== "/login") {
       next({ path: "/login" });

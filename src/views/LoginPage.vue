@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import { Local } from "@/utils/storage";
 export default {
   name: "LoginPage",
   components: {},
@@ -126,7 +127,14 @@ export default {
             .register({ userId: name, password: pswd })
             .then((res) => {
               console.log("===register===", res);
-              this.handleDoLoginRequest({ userId: name, password: pswd });
+              if (res?.data && res?.data?.code === 200) {
+                this.handleDoLoginRequest({ userId: name, password: pswd });
+              } else {
+                this.$message({
+                  message: "注册失败，请联系管理员",
+                  type: "warning",
+                });
+              }
             })
             .catch();
         } else {
@@ -142,22 +150,29 @@ export default {
         .login({ ...params })
         .then((res) => {
           console.log("===login===", res);
-          if (isRegister) {
-            this.$message({
-              message: "注册成功，并为您登陆",
-              type: "success",
+          if (res?.data && res?.data?.code === 200) {
+            if (isRegister) {
+              this.$message({
+                message: "注册成功，并为您登陆",
+                type: "success",
+              });
+            } else {
+              this.$message({
+                message: "登陆成功",
+                type: "success",
+              });
+            }
+            Local.set("user", {
+              isLogin: true,
+              userId: params.userId,
             });
+            this.$router.push("/");
           } else {
             this.$message({
-              message: "登陆成功",
-              type: "success",
+              message: res?.data?.message || "请求失败，请联系管理员",
+              type: "warning",
             });
           }
-          localStorage.setItem("user", {
-            isLogin: true,
-            userId: params.userId,
-          });
-          this.$router.push("/");
         })
         .catch((e) => {
           console.log("登录失败，请重试", e);

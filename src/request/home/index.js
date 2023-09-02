@@ -2,6 +2,7 @@ import ajax from "../ajax.js";
 
 // get请求
 const getTopUp = (params) => {
+  console.log(params);
   return ajax({
     url: "/topup/list", // userId = xxxx
     params,
