@@ -10,10 +10,11 @@
       <el-menu-item index="2" disabled>抽奖</el-menu-item>
     </el-menu> -->
 
-    <div v-if="!isAdmin">
+    <div class="mt20" v-if="!isAdmin">
       <span>近7天充值总金额：</span>
-      <span class="blod" v-loading="txtLoading">{{ money || "0" }}&nbsp;</span
-      >元
+      <span class="blod" v-loading="txtLoading"
+        >$ {{ money || "0" }}&nbsp;</span
+      >
 
       <div class="mt20 mb20">
         <el-button
@@ -22,6 +23,14 @@
           @click="handleDoSendEmail"
           :loading="btnLoading"
           >申请返利</el-button
+        >
+
+        <el-button
+          v-if="refreshBtnShow"
+          type="plain"
+          :loading="txtLoading"
+          @click="handleGetData"
+          >刷新</el-button
         >
       </div>
 
@@ -84,6 +93,7 @@ export default {
       txtLoading: false,
       btnLoading: false,
       tableLoading: false,
+      refreshBtnShow: false,
       money: "0",
       user: null,
       userList: [],
@@ -133,6 +143,7 @@ export default {
               message: res?.data?.message || "获取流水失败，请三分钟后重试",
               type: "warning",
             });
+            this.refreshBtnShow = true;
           }
         })
         .catch((e) => {

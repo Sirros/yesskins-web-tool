@@ -44,6 +44,11 @@ export default {
 </script>
 
 <style lang="scss">
+#app {
+  width: 100%;
+  height: 100%;
+}
+
 .tips-txt {
   width: 100%;
   height: 56px;

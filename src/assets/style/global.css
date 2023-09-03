@@ -2,6 +2,8 @@ html,
 body {
   padding: 0;
   margin: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .mt10 {
@@ -76,4 +78,45 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+@media screen and (max-width: 1000px) {
+  .el-message {
+    min-width: 300px !important;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .el-message-box {
+    width: 300px !important;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .el-dialog__wrapper .el-dialog {
+    width: 90vw !important;
+
+    .el-dialog__body {
+      padding: 10px 20px !important;
+    }
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .el-alert {
+    width: 70vw !important;
+  }
+}
+
+
+@media screen and (max-width: 1000px) {
+  .bg-box {
+    width: 90vw !important;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .login .form-area {
+    width: 80vw !important;
+  }
 }
