@@ -1,13 +1,12 @@
 <template>
   <div id="app">
-    <div v-if="!isLoginPage" class="tips-txt">
-      <!-- <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span> -->
+    <!-- <div v-if="!isLoginPage" class="tips-txt">
       <el-button
         style="position: absolute; right: 10px; top: 8px"
         @click="handleLogout"
         >退出登录</el-button
       >
-    </div>
+    </div> -->
     <router-view />
   </div>
 </template>

@@ -17,58 +17,7 @@
       @click="handleLogout"
       >退出登录</el-button
     >
-
-    <el-alert
-      v-if="activeIndex == '1'"
-      style="width: 30%; margin: auto"
-      class="mt20"
-      title="注意：申请返利时间间隔为 1 小时"
-      type="info"
-    >
-    </el-alert>
-
-    <div class="mt20" v-if="!isAdmin && activeIndex == '1'">
-      <span>近7天充值总金额：</span>
-      <span class="blod" v-loading="txtLoading"
-        >$ {{ money || "0" }}&nbsp;</span
-      >
-
-      <div class="mt20 mb20">
-        <el-button
-          type="primary"
-          :disabled="!money"
-          @click="handleDoSendEmail"
-          :loading="btnLoading"
-          >申请返利</el-button
-        >
-
-        <el-button
-          v-if="refreshBtnShow"
-          type="plain"
-          :loading="txtLoading"
-          @click="handleGetData"
-          >刷新</el-button
-        >
-      </div>
-
-      <div>
-        <el-divider></el-divider>
-        <span> 剩余积分：{{ integral }} </span>
-        <el-button
-          class="ml15"
-          type="plain"
-          :loading="txtLoading"
-          @click="handleRedemption"
-          >积分兑换</el-button
-        >
-      </div>
-
-      <div class="bg-box">
-        <img src="@/assets/homebg.jpg" alt="" />
-      </div>
-    </div>
-
-    <!-- <div v-if="isAdmin">
+    <div>
       <el-table
         v-loading="tableLoading"
         :data="userList"
@@ -84,7 +33,7 @@
           </template>
         </el-table-column>
       </el-table>
-    </div> -->
+    </div>
 
     <!-- 修改密码 dialog -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
@@ -104,28 +53,19 @@
         <el-button type="primary" @click="handleUpdatePswd">确 定</el-button>
       </div>
     </el-dialog>
-
-    <CustomRoll v-if="activeIndex != 1" />
   </div>
 </template>
 
 <script>
-import CustomRoll from "./CustomRoll.vue";
 import { Local } from "@/utils/storage";
 export default {
   name: "RechargeRecords",
-  components: { CustomRoll },
+  components: {},
   data() {
     return {
-      applyDisabled: true,
-      txtLoading: false,
-      btnLoading: false,
-      refreshBtnShow: false,
-      money: "0",
+      tableLoading: false,
       user: null,
-
-      // tableLoading: false,
-      // userList: [],
+      userList: [],
 
       isEditPswd: false,
       dialogTitle: "修改密码",
@@ -133,31 +73,17 @@ export default {
       form: {
         editUserId: "",
         editPassword: "",
-        integral: "",
       },
 
       activeIndex: "1",
-
-      integral: 99999, // 积分
     };
   },
-  computed: {
-    isAdmin() {
-      console.log(this.user);
-      if (!this.user) return false;
-      if (this.user && this.user?.isAdmin) {
-        return true;
-      }
-      return false;
-    },
-  },
+  computed: {},
   created() {
     // const user = Local.get("user");
     // this.user = user;
     // if (user?.isAdmin) {
     //   this.handleGetUserList();
-    // } else {
-    //   this.handleGetData();
     // }
   },
   methods: {
@@ -181,79 +107,10 @@ export default {
         })
         .catch();
     },
-
-    // 请求流水
-    handleGetData() {
-      if (!this.user) return;
-      this.txtLoading = true;
-      this.$api
-        .getTopUp()
-        .then((res) => {
-          console.log("::获取流水响应::", res);
-          if (res?.data && res?.data?.code === 200) {
-            this.money = res?.data?.data?.totalTopUp;
-          } else {
-            this.$message({
-              message: res?.data?.message || "获取流水失败，请三分钟后重试",
-              type: "warning",
-            });
-            this.refreshBtnShow = true;
-          }
-        })
-        .catch((e) => {
-          console.log("获取流水失败，请重试", e);
-          this.$message({
-            message: "获取流水失败，请重试",
-            type: "warning",
-          });
-        })
-        .finally(() => {
-          this.txtLoading = false;
-        });
-    },
-
-    // 申请返现
-    handleDoSendEmail() {
-      this.btnLoading = true;
-      this.$api
-        .sendEmail()
-        .then((res) => {
-          console.log("::申请返利响应::", res);
-          if (res?.data && res?.data?.code === 200) {
-            this.$message({
-              message: "申请成功",
-              type: "success",
-            });
-            this.handleGetData();
-          } else {
-            this.$message({
-              message: res?.data?.message || "请求异常，请联系管理员",
-              type: "warning",
-            });
-          }
-        })
-        .catch((e) => {
-          this.$message({
-            message: "请求异常，请联系管理员",
-            type: "warning",
-          });
-          console.error("请求失败，请重试", e);
-        })
-        .finally(() => {
-          this.btnLoading = false;
-        });
-    },
-
     // 编辑
-    // handleEdit(scope) {
-    //   this.form.editUserId = scope.row.userId;
-    //   this.isEditPswd = true;
-    //   this.dialogFormVisible = true;
-    // },
-
-    // 积分兑换
-    handleRedemption() {
-      this.dialogTitle = "积分兑换";
+    handleEdit(scope) {
+      this.form.editUserId = scope.row.userId;
+      this.isEditPswd = true;
       this.dialogFormVisible = true;
     },
 
