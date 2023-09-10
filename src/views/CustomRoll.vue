@@ -1,6 +1,7 @@
 <template>
   <div class="custom-roll">
     <LuckyGrid
+      v-loading="loading"
       class="canvas"
       ref="rollRef"
       :width="canvasWidth"
@@ -10,11 +11,15 @@
       :buttons="buttons"
       :rows="5"
       :cols="5"
-      @start="startCallback"
-      @end="endCallback"
+      @start="handleStartCallback"
+      @end="handleEndCallback"
     />
 
-    <div class="canvas-dom" :style="{ top: domTop, fontSize: domFontSize }">
+    <div
+      class="canvas-dom"
+      v-if="!loading"
+      :style="{ top: domTop, fontSize: domFontSize }"
+    >
       <div v-if="rollType === 'free'" class="blod">剩余次数：{{ count }}</div>
       <div v-else class="blod">剩余积分：{{ points }}，{{ ticket }}积分/次</div>
     </div>
@@ -42,254 +47,14 @@ export default {
       ticket: 0, // 单次抽奖积分
 
       timer: null,
+      loading: false,
 
       // 组件参数
       blocks: [
         { padding: "4px", background: "#869cfa" },
         { padding: "4px", background: "#e9e8fe" },
       ],
-      prizes: [
-        {
-          x: 0,
-          y: 0,
-          // fonts: [{ text: "1", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 1,
-          borderRadius: "4px",
-        },
-        {
-          x: 1,
-          y: 0,
-          // fonts: [{ text: "1", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 2,
-          y: 0,
-          // fonts: [{ text: "继续努力", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 3,
-          y: 0,
-          // fonts: [{ text: "3", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 4,
-          y: 0,
-          // fonts: [{ text: "4", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 4,
-          y: 1,
-          // fonts: [{ text: "5", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 4,
-          y: 2,
-          // fonts: [{ text: "6", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 4,
-          y: 3,
-          // fonts: [{ text: "7", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 4,
-          y: 4,
-          // fonts: [{ text: "8", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 3,
-          y: 4,
-          // fonts: [{ text: "9", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 2,
-          y: 4,
-          // fonts: [{ text: "10", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 1,
-          y: 4,
-          // fonts: [{ text: "11", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 0,
-          y: 4,
-          // fonts: [{ text: "12", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 0,
-          y: 3,
-          // fonts: [{ text: "13", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 0,
-          y: 2,
-          // fonts: [{ text: "14", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-        {
-          x: 0,
-          y: 1,
-          // fonts: [{ text: "15", top: "70%", fontSize: "14px" }],
-          imgs: [
-            {
-              src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
-              width: "90%",
-              height: "90%",
-              top: "5%",
-            },
-          ],
-          range: 0,
-          borderRadius: "4px",
-        },
-      ],
+      prizes: [],
       buttons: [
         {
           x: 2,
@@ -309,15 +74,23 @@ export default {
       },
     };
   },
+  watch: {
+    rollType: {
+      handler(n) {
+        this.handleGetPool(n);
+      },
+    },
+  },
   created() {
+    this.handleGetPool();
     this.handleCheckDeviceType();
   },
   mounted() {
-    this.$refs.rollRef.init();
+    // this.$refs.rollRef.init();
   },
   methods: {
     // 点击抽奖按钮会触发star回调
-    startCallback() {
+    handleStartCallback() {
       // 调用抽奖组件的play方法开始游戏
       this.$refs.rollRef.play();
       // 模拟调用接口异步抽奖
@@ -331,14 +104,14 @@ export default {
       const windowWidth = window.innerWidth; // 获取窗口宽度
       if (windowWidth <= 820) {
         // 小于820即为移动端
-        console.log("[]当前为移动端设备[]");
+        // console.log("[]当前为移动端设备[]");
         this.canvasWidth = "24.3rem";
         this.canvasHeight = "24.3rem";
         this.domTop = "10rem";
         this.domFontSize = "12px";
       } else {
         // 大于等于820即为PC端
-        console.log("[]当前为PC端设备[]");
+        // console.log("[]当前为PC端设备[]");
         this.canvasWidth = "48.3rem";
         this.canvasHeight = "48.3rem";
         this.domTop = "18rem";
@@ -352,18 +125,278 @@ export default {
     },
 
     // 抽奖结束会触发end回调
-    endCallback(prize) {
-      console.log(prize);
+    handleEndCallback(prize) {
+      console.log("抽奖结束{}::", prize);
       if (this.rollType === "free") {
-        this.count = 10;
+        this.count = 0;
       } else {
-        this.points = 100;
+        this.points = 0;
       }
     },
 
-    handleSetTimer(val) {
-      this.$refs.rollRef.init();
-      this.timer = val;
+    handleMenuChange(val) {
+      this.$nextTick(() => {
+        this.$refs.rollRef.init();
+        this.timer = val;
+      });
+    },
+
+    handleGetPool(type = "free") {
+      this.loading = true;
+      console.log("[请求奖池]", type);
+      this.handleInitUserInfo();
+      this.handleMenuChange();
+
+      setTimeout(() => {
+        this.prizes = [
+          {
+            x: 0,
+            y: 0,
+            // fonts: [{ text: "1", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 1,
+            borderRadius: "4px",
+          },
+          {
+            x: 1,
+            y: 0,
+            // fonts: [{ text: "1", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 2,
+            y: 0,
+            // fonts: [{ text: "继续努力", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 3,
+            y: 0,
+            // fonts: [{ text: "3", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 4,
+            y: 0,
+            // fonts: [{ text: "4", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 4,
+            y: 1,
+            // fonts: [{ text: "5", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 4,
+            y: 2,
+            // fonts: [{ text: "6", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 4,
+            y: 3,
+            // fonts: [{ text: "7", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 4,
+            y: 4,
+            // fonts: [{ text: "8", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 3,
+            y: 4,
+            // fonts: [{ text: "9", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 2,
+            y: 4,
+            // fonts: [{ text: "10", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 1,
+            y: 4,
+            // fonts: [{ text: "11", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 0,
+            y: 4,
+            // fonts: [{ text: "12", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 0,
+            y: 3,
+            // fonts: [{ text: "13", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 0,
+            y: 2,
+            // fonts: [{ text: "14", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+          {
+            x: 0,
+            y: 1,
+            // fonts: [{ text: "15", top: "70%", fontSize: "14px" }],
+            imgs: [
+              {
+                src: "https://assetsio.reedpopcdn.com/cs-go.jpeg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
+                width: "90%",
+                height: "90%",
+                top: "5%",
+              },
+            ],
+            range: 0,
+            borderRadius: "4px",
+          },
+        ];
+        this.loading = false;
+      }, 1000);
+    },
+
+    handleInitUserInfo() {
+      this.count = 1;
+      this.points = 2;
     },
 
     // 根据概率 **** 内置了中奖概率

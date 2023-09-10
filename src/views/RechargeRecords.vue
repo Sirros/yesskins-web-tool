@@ -106,16 +106,16 @@
     </el-dialog>
 
     <CustomRoll
-      v-if="activeIndex == 2"
+      v-if="activeIndex != '1'"
       :ref="`${activeIndex}Ref`"
-      rollType="free"
+      :rollType="rollType"
     />
-
+    <!-- 
     <CustomRoll
       v-if="activeIndex == 3"
       :ref="`${activeIndex}Ref`"
       rollType="pay"
-    />
+    /> -->
   </div>
 </template>
 
@@ -147,13 +147,13 @@ export default {
       },
 
       activeIndex: "1",
-
+      rollType: "free",
       integral: 99999, // 积分
     };
   },
   computed: {
     isAdmin() {
-      console.log(this.user);
+      console.log("当前用户：", this.user);
       if (!this.user) return false;
       if (this.user && this.user?.isAdmin) {
         return true;
@@ -162,8 +162,8 @@ export default {
     },
   },
   created() {
-    // const user = Local.get("user");
-    // this.user = user;
+    const user = Local.get("user");
+    this.user = user;
     // if (user?.isAdmin) {
     //   this.handleGetUserList();
     // } else {
@@ -349,8 +349,7 @@ export default {
 
     // 菜单选择
     handleSelect(val) {
-      const ref = `${this.activeIndex}Ref`;
-      this.$refs?.[ref]?.handleSetTimer(null);
+      this.rollType = val == 2 ? "free" : "pay";
       this.$nextTick(() => {
         this.activeIndex = val;
       });
