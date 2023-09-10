@@ -105,7 +105,17 @@
       </div>
     </el-dialog>
 
-    <CustomRoll v-if="activeIndex != 1" />
+    <CustomRoll
+      v-if="activeIndex == 2"
+      :ref="`${activeIndex}Ref`"
+      rollType="free"
+    />
+
+    <CustomRoll
+      v-if="activeIndex == 3"
+      :ref="`${activeIndex}Ref`"
+      rollType="pay"
+    />
   </div>
 </template>
 
@@ -339,7 +349,11 @@ export default {
 
     // 菜单选择
     handleSelect(val) {
-      this.activeIndex = val;
+      const ref = `${this.activeIndex}Ref`;
+      this.$refs?.[ref]?.handleSetTimer(null);
+      this.$nextTick(() => {
+        this.activeIndex = val;
+      });
     },
   },
 };
