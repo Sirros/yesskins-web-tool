@@ -1,15 +1,17 @@
 <template>
   <div class="records">
     <el-menu
-      v-if="!isAdmin"
       :default-active="activeIndex"
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
     >
-      <el-menu-item index="1">流水</el-menu-item>
-      <el-menu-item index="2">免费抽奖</el-menu-item>
-      <el-menu-item index="3">付费抽奖</el-menu-item>
+      <el-menu-item v-if="!isAdmin" index="money">流水</el-menu-item>
+      <el-menu-item v-if="!isAdmin" index="freeRoll">免费抽奖</el-menu-item>
+      <el-menu-item v-if="!isAdmin" index="payRoll">付费抽奖</el-menu-item>
+      <el-menu-item v-if="isAdmin" index="setting">用户抽奖设置</el-menu-item>
+      <el-menu-item v-if="isAdmin" index="poolSetting">奖池设置</el-menu-item>
+      <el-menu-item v-if="isAdmin" index="editPswd">修改密码</el-menu-item>
     </el-menu>
 
     <el-button
@@ -19,7 +21,7 @@
     >
 
     <el-alert
-      v-if="activeIndex == '1'"
+      v-if="activeIndex == 'money'"
       style="width: 30%; margin: auto"
       class="mt20"
       title="注意：申请返利时间间隔为 1 小时"
@@ -28,7 +30,7 @@
     >
     </el-alert>
 
-    <div class="mt20" v-if="!isAdmin && activeIndex == '1'">
+    <div class="mt20" v-if="!isAdmin && activeIndex == 'money'">
       <span>近7天充值总金额：</span>
       <span class="blod" v-loading="txtLoading"
         >$ {{ money || "0" }}&nbsp;</span
@@ -69,33 +71,9 @@
       </div>
     </div>
 
-    <!-- <div v-if="isAdmin">
-      <el-table
-        v-loading="tableLoading"
-        :data="userList"
-        border
-        style="width: 40%; margin: auto; margin-top: 30px"
-      >
-        <el-table-column fixed prop="userId" label="用户ID"> </el-table-column>
-        <el-table-column prop="password" label="操作">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleEdit(scope)"
-              >编辑</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-    </div> -->
-
     <!-- 修改密码 dialog -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        <el-form-item v-if="isEditPswd" label="用户ID" label-width="70">
-          <el-input v-model="form.editUserId" disabled></el-input>
-        </el-form-item>
-        <el-form-item v-if="isEditPswd" label="新密码" label-width="70">
-          <el-input v-model="form.editPassword"></el-input>
-        </el-form-item>
         <el-form-item v-if="!isEditPswd" label="兑换积分" label-width="70">
           <el-input v-model="form.integral"></el-input>
         </el-form-item>
@@ -107,25 +85,25 @@
     </el-dialog>
 
     <CustomRoll
-      v-if="activeIndex != '1'"
+      v-if="['freeRoll', 'payRoll'].includes(activeIndex)"
       :ref="`${activeIndex}Ref`"
       :rollType="rollType"
     />
-    <!-- 
-    <CustomRoll
-      v-if="activeIndex == 3"
-      :ref="`${activeIndex}Ref`"
-      rollType="pay"
-    /> -->
+
+    <AdminSetting
+      v-if="['setting', 'poolSetting', 'editPswd'].includes(activeIndex)"
+      :menuTab="activeIndex"
+    />
   </div>
 </template>
 
 <script>
 import CustomRoll from "./CustomRoll.vue";
+import AdminSetting from "./AdminSetting.vue";
 import { Local } from "@/utils/storage";
 export default {
   name: "RechargeRecords",
-  components: { CustomRoll },
+  components: { CustomRoll, AdminSetting },
   data() {
     return {
       applyDisabled: true,
@@ -135,19 +113,14 @@ export default {
       money: "0",
       user: null,
 
-      // tableLoading: false,
-      // userList: [],
-
       isEditPswd: false,
       dialogTitle: "修改密码",
       dialogFormVisible: false,
       form: {
-        editUserId: "",
-        editPassword: "",
         integral: "",
       },
 
-      activeIndex: "1",
+      activeIndex: "money",
       rollType: "free",
       integral: 99999, // 积分
     };
@@ -165,11 +138,13 @@ export default {
   created() {
     const user = Local.get("user");
     this.user = user;
-    // if (user?.isAdmin) {
-    //   this.handleGetUserList();
-    // } else {
-    //   this.handleGetData();
-    // }
+    if (user?.isAdmin) {
+      this.activeIndex = "setting";
+      // this.handleGetUserList();
+    } else {
+      this.activeIndex = "money";
+      // this.handleGetData();
+    }
   },
   methods: {
     // 退出登录
