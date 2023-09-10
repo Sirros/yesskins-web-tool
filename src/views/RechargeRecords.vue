@@ -24,6 +24,7 @@
       class="mt20"
       title="注意：申请返利时间间隔为 1 小时"
       type="info"
+      :closable="false"
     >
     </el-alert>
 
@@ -350,9 +351,7 @@ export default {
     // 菜单选择
     handleSelect(val) {
       this.rollType = val == 2 ? "free" : "pay";
-      this.$nextTick(() => {
-        this.activeIndex = val;
-      });
+      this.activeIndex = val;
     },
   },
 };

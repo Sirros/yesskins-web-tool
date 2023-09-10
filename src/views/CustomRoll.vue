@@ -3,7 +3,7 @@
     <LuckyGrid
       v-loading="loading"
       class="canvas"
-      ref="rollRef"
+      ref="myLucky"
       :width="canvasWidth"
       :height="canvasHeight"
       :prizes="prizes"
@@ -23,6 +23,29 @@
       <div v-if="rollType === 'free'" class="blod">剩余次数：{{ count }}</div>
       <div v-else class="blod">剩余积分：{{ points }}，{{ ticket }}积分/次</div>
     </div>
+
+    <el-dialog
+      v-if="!!result"
+      title="抽奖结果"
+      width="30%"
+      :visible.sync="resultDialog"
+      :before-close="handleClose"
+    >
+      <el-image :src="result.imgs[0].src"></el-image>
+      <div class="blod mt5" style="font-size: 18px">{{ result.label }}</div>
+      <el-alert
+        class="mt10"
+        title="恭喜你，抽奖结果已发送至管理员，请注意查收"
+        type="success"
+        center
+        style="width: 100% !important"
+        :closable="false"
+      >
+      </el-alert>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleClose">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -48,6 +71,8 @@ export default {
 
       timer: null,
       loading: false,
+      resultDialog: false,
+      result: null, // 抽奖结果
 
       // 组件参数
       blocks: [
@@ -59,8 +84,9 @@ export default {
         {
           x: 2,
           y: 2,
-          // background: "#7f95d1",
-          // fonts: [{ text: "开始", top: "70%", fontSize: "14px" }],
+          background: "#7f95d1",
+          borderRadius: "2px",
+          // fonts: [{ text: "开始", fontSize: "14px" }],
           imgs: [
             {
               src: "https://bpic.588ku.com/element_origin_min_pic/19/04/22/e9ca193bcb91f9211b5fc59ae437a23e.jpg",
@@ -85,59 +111,44 @@ export default {
     this.handleGetPool();
     this.handleCheckDeviceType();
   },
-  mounted() {
-    // this.$refs.rollRef.init();
-  },
   methods: {
-    // 点击抽奖按钮会触发star回调
+    // 开始抽奖
     handleStartCallback() {
+      if (this.rollType === "free") {
+        if (this.count === 0) return;
+      } else {
+        if (this.points / this.ticket < 1) return;
+      }
+      console.log("开始抽奖{}::");
       // 调用抽奖组件的play方法开始游戏
-      this.$refs.rollRef.play();
+      this.$refs.myLucky.play();
       // 模拟调用接口异步抽奖
       this.timer = setTimeout(() => {
         // 调用stop停止旋转并传递中奖索引
-        this.$refs.rollRef.stop();
+        this.$refs?.myLucky?.stop();
       }, 3000);
     },
 
-    handleCheckDeviceType() {
-      const windowWidth = window.innerWidth; // 获取窗口宽度
-      if (windowWidth <= 820) {
-        // 小于820即为移动端
-        // console.log("[]当前为移动端设备[]");
-        this.canvasWidth = "24.3rem";
-        this.canvasHeight = "24.3rem";
-        this.domTop = "10rem";
-        this.domFontSize = "12px";
-      } else {
-        // 大于等于820即为PC端
-        // console.log("[]当前为PC端设备[]");
-        this.canvasWidth = "48.3rem";
-        this.canvasHeight = "48.3rem";
-        this.domTop = "18rem";
-        this.domFontSize = "16px";
-      }
-      this.handleSetPrizes();
-    },
-
-    handleSetPrizes() {
-      return false;
-    },
-
-    // 抽奖结束会触发end回调
+    // 抽奖结束
     handleEndCallback(prize) {
       console.log("抽奖结束{}::", prize);
+      this.result = Object.values(prize).length ? prize : null;
+      if (!Object.values(prize).length) return;
       if (this.rollType === "free") {
         this.count = 0;
       } else {
-        this.points = 0;
+        this.points -= this.ticket;
       }
+      this.handleOpenResult();
     },
 
-    handleMenuChange(val) {
+    // 初始化
+    handleReset(val) {
       this.$nextTick(() => {
-        this.$refs.rollRef.init();
+        this.$refs.myLucky.init();
+        clearTimeout(this.timer);
         this.timer = val;
+        this.result = null;
       });
     },
 
@@ -145,7 +156,7 @@ export default {
       this.loading = true;
       console.log("[请求奖池]", type);
       this.handleInitUserInfo();
-      this.handleMenuChange();
+      this.handleReset();
 
       setTimeout(() => {
         this.prizes = [
@@ -163,6 +174,7 @@ export default {
             ],
             range: 1,
             borderRadius: "4px",
+            label: "啊实打实大苏打撒旦撒",
           },
           {
             x: 1,
@@ -394,11 +406,40 @@ export default {
       }, 1000);
     },
 
+    // 设置展示
     handleInitUserInfo() {
       this.count = 1;
-      this.points = 2;
+      this.points = 1300;
+      this.ticket = 500;
     },
 
+    handleOpenResult() {
+      this.resultDialog = true;
+    },
+
+    handleClose() {
+      this.resultDialog = false;
+    },
+
+    // 判断设备
+    handleCheckDeviceType() {
+      const windowWidth = window.innerWidth; // 获取窗口宽度
+      if (windowWidth <= 820) {
+        // 小于820即为移动端
+        // console.log("[]当前为移动端设备[]");
+        this.canvasWidth = "24.3rem";
+        this.canvasHeight = "24.3rem";
+        this.domTop = "10rem";
+        this.domFontSize = "12px";
+      } else {
+        // 大于等于820即为PC端
+        // console.log("[]当前为PC端设备[]");
+        this.canvasWidth = "48.3rem";
+        this.canvasHeight = "48.3rem";
+        this.domTop = "18rem";
+        this.domFontSize = "16px";
+      }
+    },
     // 根据概率 **** 内置了中奖概率
     // start() {
     //   const rand = Math.random();
@@ -432,7 +473,7 @@ export default {
 }
 
 .canvas-dom {
-  height: 100px;
+  // height: 100px;
   position: absolute;
   // top: 300px;
   left: 50%;
