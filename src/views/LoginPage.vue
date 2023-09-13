@@ -170,7 +170,8 @@ export default {
             Local.set("user", {
               isLogin: true,
               userId: params.userId,
-              isAdmin: params.userId === "root", // 判断是否管理员
+              isAdmin: params.userId === "root", // 判断是否管理员、
+              time: new Date().getTime(),
             });
             this.$router.push("/");
           } else {
@@ -191,20 +192,12 @@ export default {
     handleCloseDialog() {
       this.dialogVisible = false;
     },
-    // handleSelect(val) {
-    //   console.log(val);
-    // },
   },
 };
 </script>
 
 <style lang="scss">
 .login {
-  // position: absolute;
-  // top: 0;
-  // left: 0;
-  // right: 0;
-  // bottom: 0;
   width: 100%;
   height: 100%;
   background-image: url("../assets/bg.jpg");
@@ -219,7 +212,6 @@ export default {
   top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);
-  // border: 1px solid #eee;
   border-radius: 2px;
 
   .footer {

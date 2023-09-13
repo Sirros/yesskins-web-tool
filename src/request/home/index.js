@@ -1,6 +1,6 @@
 import ajax from "../ajax.js";
 
-// get请求
+// 获取流水
 const getTopUp = (params) => {
   console.log(params);
   return ajax({
@@ -9,7 +9,7 @@ const getTopUp = (params) => {
   });
 };
 
-// get请求
+// 发送邮件
 const sendEmail = (data) => {
   return ajax({
     method: "POST",
@@ -36,9 +36,48 @@ const updatePswd = (data) => {
   });
 };
 
+// 更新免费抽奖次数
+const updateFreeRollCount = (data) => {
+  return ajax({
+    method: "POST",
+    url: "/xxxxx",
+    data,
+  });
+};
+
+// 获取奖池列表
+const getGoodsPool = (params) => {
+  return ajax({
+    url: "/xxxxx",
+    params,
+  });
+};
+
+// 设置奖池，单个设置
+const setGoodsPool = (data) => {
+  return ajax({
+    method: "POST",
+    url: "/xxxxx",
+    data,
+  });
+};
+
+// 兑换积分
+const updatePoint = (data) => {
+  return ajax({
+    method: "POST",
+    url: "/xxxxx",
+    data,
+  });
+};
+
 export default {
   getTopUp,
   sendEmail,
   getUserList,
   updatePswd,
+  updateFreeRollCount,
+  getGoodsPool,
+  setGoodsPool,
+  updatePoint,
 };

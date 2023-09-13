@@ -36,7 +36,12 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   console.log(to, from, next);
-  Local.set("user", { userId: "root", password: "123", isAdmin: true });
+  Local.set("user", {
+    userId: "1223332212",
+    password: "123",
+    isAdmin: false,
+    time: new Date().getTime(),
+  });
   next();
   // const isLogin = Local.get("user");
   // if (!isLogin) {

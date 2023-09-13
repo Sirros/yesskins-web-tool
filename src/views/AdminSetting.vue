@@ -158,7 +158,7 @@
           label-width="70"
           v-if="menuTab === 'setting'"
         >
-          <el-input v-model="form.editPassword"></el-input>
+          <el-input v-model="form.freeCount"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -200,6 +200,7 @@ export default {
       form: {
         editUserId: "",
         editPassword: "",
+        freeCount: "",
       },
     };
   },
@@ -211,26 +212,6 @@ export default {
     this.handleGetPool();
   },
   methods: {
-    // 退出登录
-    handleLogout() {
-      const user = Local.get("user");
-      console.log(user, "【【退出登录】】");
-      if (!user) return;
-      this.$api
-        .logout({ userId: user.userId })
-        .then((res) => {
-          if (res?.data && res?.data?.code === 200) {
-            console.log("::退出登录响应::", res);
-            Local.set("user", "");
-            this.$message({
-              message: "退出登录成功",
-              type: "success",
-            });
-            this.$router.push("/login");
-          }
-        })
-        .catch();
-    },
     // 编辑抽奖次数 click
     handleEditRollCount(scope) {
       this.form.editUserId = scope.row.userId;
@@ -286,13 +267,12 @@ export default {
         });
     },
 
-    // 更新免费抽奖次数请求
+    // 更新免费抽奖次数请求 TODO:
     handleUpdateRollCount() {
-      // TODO:
       // this.$api
-      //   .xxx({
+      //   .updateFreeRollCount({
       //     userId: this.form.editUserId,
-      //     password: this.form.editPassword,
+      //     freeCount: this.form.freeCount,
       //   })
       //   .then((res) => {
       //     console.log("::更新密码请求相应::", res);
@@ -309,9 +289,8 @@ export default {
       //   .catch((e) => this.handleRequestError(e));
     },
 
-    // 获取用户列表
+    // 获取用户列表TODO:
     handleGetUserList() {
-      // TODO: 请求获取用户列表
       this.tableLoading = true;
       this.$api
         .getUserList()
@@ -341,9 +320,23 @@ export default {
       }, 2000);
     },
 
-    // 获取奖池列表
+    // 获取奖池列表 TODO:
     handleGetPool() {
-      // TODO: 请求获取奖池列表
+      // this.$api
+      //   .getGoodsPool()
+      //   .then((res) => {
+      //     console.log("::更新密码请求相应::", res);
+      //     if (res?.data && res?.data?.code === 200) {
+      //       this.$message({
+      //         message: "更新密码成功",
+      //         type: "success",
+      //       });
+      //       this.handleCloseDialog();
+      //     } else {
+      //       this.handleCodeNot200(res, "更新密码");
+      //     }
+      //   })
+      //   .catch((e) => this.handleRequestError(e));
       this.freePoolGoods = [
         {
           name: 14123,
@@ -430,10 +423,27 @@ export default {
     },
 
     // 奖池设置相关
-    // 保存单个奖池编辑请求
+    // 保存单个奖池编辑请求 TODO:
     handleSubmitEditPool(item) {
-      // TODO:
       console.log(item);
+      // this.$api
+      //   .setGoodsPool({
+      //     userId: this.form.editUserId,
+      //     freeCount: this.form.freeCount,
+      //   })
+      //   .then((res) => {
+      //     console.log("::更新密码请求相应::", res);
+      //     if (res?.data && res?.data?.code === 200) {
+      //       this.$message({
+      //         message: "更新密码成功",
+      //         type: "success",
+      //       });
+      //       this.handleCloseDialog();
+      //     } else {
+      //       this.handleCodeNot200(res, "更新密码");
+      //     }
+      //   })
+      //   .catch((e) => this.handleRequestError(e));
     },
     handlePoolEditClick(idx) {
       this.editIdx = idx;

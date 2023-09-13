@@ -71,16 +71,16 @@
       </div>
     </div>
 
-    <!-- 修改密码 dialog -->
+    <!-- 兑换积分 dialog -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        <el-form-item v-if="!isEditPswd" label="兑换积分" label-width="70">
+        <el-form-item label="兑换积分" label-width="70">
           <el-input v-model="form.integral"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleCloseDialog">取 消</el-button>
-        <el-button type="primary" @click="handleUpdatePswd">确 定</el-button>
+        <el-button type="primary" @click="handleSubmit">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -113,8 +113,7 @@ export default {
       money: "0",
       user: null,
 
-      isEditPswd: false,
-      dialogTitle: "修改密码",
+      dialogTitle: "积分兑换",
       dialogFormVisible: false,
       form: {
         integral: "",
@@ -137,13 +136,15 @@ export default {
   },
   created() {
     const user = Local.get("user");
+    console.log(user, !user);
+    if (!user) {
+      return this.$router.push("/login");
+    }
     this.user = user;
     if (user?.isAdmin) {
       this.activeIndex = "setting";
-      // this.handleGetUserList();
     } else {
       this.activeIndex = "money";
-      // this.handleGetData();
     }
   },
   methods: {
@@ -230,103 +231,55 @@ export default {
         });
     },
 
-    // 编辑
-    // handleEdit(scope) {
-    //   this.form.editUserId = scope.row.userId;
-    //   this.isEditPswd = true;
-    //   this.dialogFormVisible = true;
-    // },
-
-    // 积分兑换
+    // 积分兑换 dialog
     handleRedemption() {
       this.dialogTitle = "积分兑换";
       this.dialogFormVisible = true;
     },
-
     handleCloseDialog() {
-      this.isEditPswd = false;
       this.dialogFormVisible = false;
       this.form.editUserId = "";
-      this.form.editPassword = "";
     },
-
+    // 积分兑换提交 TODO:
     handleSubmit() {
-      if (this.isEditPswd) {
-        this.handleUpdatePswd();
-        console.log("==修改密码==");
-      } else {
-        this.handleGetIntegral();
-        console.log("==兑换积分==");
-      }
-    },
-
-    // 更新密码请求
-    handleUpdatePswd() {
-      this.$api
-        .updatePswd({
-          userId: this.form.editUserId,
-          password: this.form.editPassword,
-        })
-        .then((res) => {
-          console.log("::更新密码请求相应::", res);
-          if (res?.data && res?.data?.code === 200) {
-            this.$message({
-              message: "更新密码成功",
-              type: "success",
-            });
-            this.handleCloseDialog();
-          } else {
-            this.$message({
-              message: res?.data?.message || "更新密码请求异常，请联系管理员",
-              type: "warning",
-            });
-          }
-        })
-        .catch((e) => {
-          this.$message({
-            message: "更新密码请求异常，请联系管理员",
-            type: "warning",
-          });
-          console.error("更新密码请求失败，请重试", e);
-        });
-    },
-
-    // 兑换积分请求
-    handleGetIntegral() {},
-
-    // 获取用户列表
-    handleGetUserList() {
-      this.tableLoading = true;
-      this.$api
-        .getUserList()
-        .then((res) => {
-          console.log(":::获取用户列表响应:::", res);
-          if (res?.data && res?.data?.code === 200) {
-            this.userList = res.data.data;
-          } else {
-            this.$message({
-              message:
-                res?.data?.message || "获取用户列表请求异常，请联系管理员",
-              type: "warning",
-            });
-          }
-        })
-        .catch((e) => {
-          this.$message({
-            message: "获取用户列表请求异常，请联系管理员",
-            type: "warning",
-          });
-          console.error("获取用户列表请求失败，请重试", e);
-        })
-        .finally(() => {
-          this.tableLoading = false;
-        });
+      // this.$api
+      //   .updatePoint({
+      //     userId: this.form.editUserId,
+      //     integral: this.form.integral,
+      //   })
+      //   .then((res) => {
+      //     console.log("::积分兑换请求相应::", res);
+      //     if (res?.data && res?.data?.code === 200) {
+      //       this.$message({
+      //         message: "积分兑换成功",
+      //         type: "success",
+      //       });
+      //       this.handleCloseDialog();
+      //     } else {
+      //       this.handleCodeNot200(res, "积分兑换");
+      //     }
+      //   })
+      //   .catch((e) => this.handleRequestError(e));
     },
 
     // 菜单选择
     handleSelect(val) {
       this.rollType = val == 2 ? "free" : "pay";
       this.activeIndex = val;
+    },
+    // 辅助函数
+    handleCodeNot200(res, type) {
+      this.$message({
+        message: res?.data?.message || type + "请求异常，请联系管理员",
+        type: "warning",
+      });
+    },
+    handleRequestError(e) {
+      this.$message({
+        message: "请求异常，请联系管理员",
+        type: "warning",
+      });
+      console.error("请求失败，请重试", e);
     },
   },
 };
