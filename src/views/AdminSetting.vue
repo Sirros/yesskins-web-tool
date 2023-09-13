@@ -2,7 +2,7 @@
   <div class="admin-setting">
     <el-radio-group
       class="mt20"
-      v-if="['setting', 'poolSetting'].includes(menuTab)"
+      v-if="['poolSetting'].includes(menuTab)"
       v-model="poolType"
       @change="handlePoolTypeChange"
     >
@@ -22,7 +22,10 @@
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="handleEdit(scope)"
+              <el-button
+                type="text"
+                size="small"
+                @click="handleEditRollCount(scope)"
                 >编辑</el-button
               >
             </template>
@@ -39,7 +42,7 @@
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="handleEdit(scope)"
+              <el-button type="text" size="small" @click="handleEditPswd(scope)"
                 >编辑</el-button
               >
             </template>
@@ -129,7 +132,7 @@
         <el-table-column fixed prop="userId" label="用户ID"> </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleEdit(scope)"
+            <el-button type="text" size="small" @click="handleEditPswd(scope)"
               >编辑</el-button
             >
           </template>
@@ -143,7 +146,18 @@
         <el-form-item label="用户ID" label-width="70">
           <el-input v-model="form.editUserId" disabled></el-input>
         </el-form-item>
-        <el-form-item label="新密码" label-width="70">
+        <el-form-item
+          label="新密码"
+          label-width="70"
+          v-if="menuTab === 'editPswd'"
+        >
+          <el-input v-model="form.editPassword"></el-input>
+        </el-form-item>
+        <el-form-item
+          label="免费抽奖次数"
+          label-width="70"
+          v-if="menuTab === 'setting'"
+        >
           <el-input v-model="form.editPassword"></el-input>
         </el-form-item>
       </el-form>
@@ -181,6 +195,7 @@ export default {
 
       // 修改密码相关
       dialogTitle: "修改密码",
+      dialogEditType: "pswd",
       dialogFormVisible: false,
       form: {
         editUserId: "",
@@ -188,13 +203,6 @@ export default {
       },
     };
   },
-  // watch: {
-  //   menuTab: {
-  //     handler(n, o) {
-  //       console.log(n, o);
-  //     },
-  //   },
-  // },
   created() {
     const user = Local.get("user");
     console.log("====", user);
@@ -223,21 +231,35 @@ export default {
         })
         .catch();
     },
-    // 编辑
-    handleEdit(scope) {
+    // 编辑抽奖次数 click
+    handleEditRollCount(scope) {
       this.form.editUserId = scope.row.userId;
+      this.dialogTitle = "抽奖设置";
+      this.dialogEditType = "roll";
       this.dialogFormVisible = true;
     },
-
+    // 编辑密码 click
+    handleEditPswd(scope) {
+      this.form.editUserId = scope.row.userId;
+      this.dialogTitle = "设置密码";
+      this.dialogEditType = "pswd";
+      this.dialogFormVisible = true;
+    },
     handleCloseDialog() {
       this.dialogFormVisible = false;
+      this.dialogTitle = "修改密码";
+      this.dialogEditType = "pswd";
       this.form.editUserId = "";
       this.form.editPassword = "";
     },
 
+    // dialog 提交
     handleSubmit() {
-      this.handleUpdatePswd();
-      console.log("==修改密码==");
+      if (this.dialogEditType === "pswd") {
+        this.handleUpdatePswd();
+      } else {
+        this.handleUpdateRollCount();
+      }
     },
 
     // 更新密码请求
@@ -256,48 +278,57 @@ export default {
             });
             this.handleCloseDialog();
           } else {
-            this.$message({
-              message: res?.data?.message || "更新密码请求异常，请联系管理员",
-              type: "warning",
-            });
+            this.handleCodeNot200(res, "更新密码");
           }
         })
         .catch((e) => {
-          this.$message({
-            message: "更新密码请求异常，请联系管理员",
-            type: "warning",
-          });
-          console.error("更新密码请求失败，请重试", e);
+          this.handleRequestError(e);
         });
+    },
+
+    // 更新免费抽奖次数请求
+    handleUpdateRollCount() {
+      // TODO:
+      // this.$api
+      //   .xxx({
+      //     userId: this.form.editUserId,
+      //     password: this.form.editPassword,
+      //   })
+      //   .then((res) => {
+      //     console.log("::更新密码请求相应::", res);
+      //     if (res?.data && res?.data?.code === 200) {
+      //       this.$message({
+      //         message: "更新密码成功",
+      //         type: "success",
+      //       });
+      //       this.handleCloseDialog();
+      //     } else {
+      //       this.handleCodeNot200(res, "更新密码");
+      //     }
+      //   })
+      //   .catch((e) => this.handleRequestError(e));
     },
 
     // 获取用户列表
     handleGetUserList() {
+      // TODO: 请求获取用户列表
       this.tableLoading = true;
-      // this.$api
-      //   .getUserList()
-      //   .then((res) => {
-      //     console.log(":::获取用户列表响应:::", res);
-      //     if (res?.data && res?.data?.code === 200) {
-      //       this.userList = res.data.data;
-      //     } else {
-      //       this.$message({
-      //         message:
-      //           res?.data?.message || "获取用户列表请求异常，请联系管理员",
-      //         type: "warning",
-      //       });
-      //     }
-      //   })
-      //   .catch((e) => {
-      //     this.$message({
-      //       message: "获取用户列表请求异常，请联系管理员",
-      //       type: "warning",
-      //     });
-      //     console.error("获取用户列表请求失败，请重试", e);
-      //   })
-      //   .finally(() => {
-      //     this.tableLoading = false;
-      //   });
+      this.$api
+        .getUserList()
+        .then((res) => {
+          console.log(":::获取用户列表响应:::", res);
+          if (res?.data && res?.data?.code === 200) {
+            this.userList = res.data.data;
+          } else {
+            this.handleCodeNot200(res, "获取用户列表");
+          }
+        })
+        .catch((e) => {
+          this.handleRequestError(e);
+        })
+        .finally(() => {
+          this.tableLoading = false;
+        });
 
       setTimeout(() => {
         this.userList = [
@@ -312,6 +343,7 @@ export default {
 
     // 获取奖池列表
     handleGetPool() {
+      // TODO: 请求获取奖池列表
       this.freePoolGoods = [
         {
           name: 14123,
@@ -393,29 +425,44 @@ export default {
 
     // 图片上传
     handleUploadChange(data) {
-      console.log(data);
+      // console.log(data);
       this.editFile = data;
     },
 
+    // 奖池设置相关
+    // 保存单个奖池编辑请求
+    handleSubmitEditPool(item) {
+      // TODO:
+      console.log(item);
+    },
     handlePoolEditClick(idx) {
       this.editIdx = idx;
     },
-
     handlePoolEditCancel() {
       this.editFile = null;
       this.editIdx = -1;
     },
-
-    handleSubmitEditPool(item) {
-      console.log(item);
-    },
-
     handlePoolTypeChange(val) {
       if (val === "付费奖池") {
         this.showList = this.payPoolGoods;
       } else {
         this.showList = this.freePoolGoods;
       }
+    },
+
+    // 辅助函数
+    handleCodeNot200(res, type) {
+      this.$message({
+        message: res?.data?.message || type + "请求异常，请联系管理员",
+        type: "warning",
+      });
+    },
+    handleRequestError(e) {
+      this.$message({
+        message: "请求异常，请联系管理员",
+        type: "warning",
+      });
+      console.error("请求失败，请重试", e);
     },
   },
 };
@@ -432,6 +479,7 @@ export default {
   margin: 20px auto;
   border: 1px solid #eee;
   padding: 20px;
+  overflow: auto;
 
   li {
     list-style-type: none;

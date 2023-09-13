@@ -9,7 +9,7 @@
       <el-menu-item v-if="!isAdmin" index="money">流水</el-menu-item>
       <el-menu-item v-if="!isAdmin" index="freeRoll">免费抽奖</el-menu-item>
       <el-menu-item v-if="!isAdmin" index="payRoll">付费抽奖</el-menu-item>
-      <el-menu-item v-if="isAdmin" index="setting">用户抽奖设置</el-menu-item>
+      <el-menu-item v-if="isAdmin" index="setting">抽奖设置</el-menu-item>
       <el-menu-item v-if="isAdmin" index="poolSetting">奖池设置</el-menu-item>
       <el-menu-item v-if="isAdmin" index="editPswd">修改密码</el-menu-item>
     </el-menu>
