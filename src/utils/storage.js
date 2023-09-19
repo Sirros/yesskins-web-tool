@@ -14,7 +14,7 @@ export const Local = {
       const nowTime = new Date().getTime();
       // 计算两个时间戳之间相差的毫秒数
       const diffMilliseconds = Math.abs(loginTime - nowTime);
-      console.log(loginTime, nowTime, diffMilliseconds);
+      // console.log(loginTime, nowTime, diffMilliseconds);
       // 判断相差的分钟数是否大于10分钟
       if (diffMilliseconds / (1000 * 60) > 2) {
         return null;

@@ -25,16 +25,17 @@ const logout = (data) => {
   });
 };
 
-// get请求
-// const login = (params) => {
-//   return ajax({
-//     url: "/xxx",
-//     params,
-//   });
-// };
+// 获取用户详情
+const detail = (params) => {
+  return ajax({
+    url: "/userService/userDetail",
+    params,
+  });
+};
 
 export default {
   login,
   register,
   logout,
+  detail,
 };

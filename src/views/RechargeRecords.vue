@@ -39,7 +39,7 @@
       <div class="mt20 mb20">
         <el-button
           type="primary"
-          :disabled="!money"
+          :disabled="!canApply"
           @click="handleDoSendEmail"
           :loading="btnLoading"
           >申请返利</el-button
@@ -60,8 +60,8 @@
         <el-button
           class="ml15"
           type="plain"
-          :loading="txtLoading"
           @click="handleRedemption"
+          :disabled="!canExchange"
           >积分兑换</el-button
         >
       </div>
@@ -121,7 +121,12 @@ export default {
 
       activeIndex: "money",
       rollType: "free",
-      integral: 99999, // 积分
+      integral: 0, // 积分
+      startTime: "",
+      endTime: "",
+
+      canApply: false,
+      canExchange: false,
     };
   },
   computed: {
@@ -145,6 +150,7 @@ export default {
       this.activeIndex = "setting";
     } else {
       this.activeIndex = "money";
+      this.handleGetData();
     }
   },
   methods: {
@@ -152,7 +158,11 @@ export default {
     handleLogout() {
       const user = Local.get("user");
       console.log(user, "【【退出登录】】");
-      if (!user) return;
+      if (!user) {
+        window.localStorage.removeItem("user");
+        this.$router.push("/login");
+        return;
+      }
       this.$api
         .logout({ userId: user.userId })
         .then((res) => {
@@ -179,12 +189,19 @@ export default {
           console.log("::获取流水响应::", res);
           if (res?.data && res?.data?.code === 200) {
             this.money = res?.data?.data?.totalTopUp;
+            this.startTime = res?.data?.data?.startTime;
+            this.endTime = res?.data?.data?.endTime;
+            this.canApply = true;
+            this.$nextTick(() => {
+              this.handleGetDetail();
+            });
           } else {
             this.$message({
               message: res?.data?.message || "获取流水失败，请三分钟后重试",
               type: "warning",
             });
             this.refreshBtnShow = true;
+            this.canApply = false;
           }
         })
         .catch((e) => {
@@ -231,10 +248,37 @@ export default {
         });
     },
 
+    handleGetDetail() {
+      this.$api
+        .detail()
+        .then((res) => {
+          if (res?.data && res?.data?.code === 200) {
+            this.integral = res?.data?.data?.point;
+            this.canExchange = true;
+          } else {
+            this.$message({
+              message: res?.data?.message || "获取详情，请三分钟后重试",
+              type: "warning",
+            });
+            this.refreshBtnShow = true;
+            this.canExchange = false;
+          }
+        })
+        .catch((e) => {
+          console.log("获取详情，请重试", e);
+          this.$message({
+            message: "获取详情，请重试",
+            type: "warning",
+          });
+        });
+    },
+
     // 积分兑换 dialog
     handleRedemption() {
-      this.dialogTitle = "积分兑换";
-      this.dialogFormVisible = true;
+      // this.dialogTitle = "积分兑换";
+      // this.dialogFormVisible = true;
+
+      this.handleSubmit();
     },
     handleCloseDialog() {
       this.dialogFormVisible = false;
@@ -242,29 +286,32 @@ export default {
     },
     // 积分兑换提交 TODO:
     handleSubmit() {
-      // this.$api
-      //   .updatePoint({
-      //     userId: this.form.editUserId,
-      //     integral: this.form.integral,
-      //   })
-      //   .then((res) => {
-      //     console.log("::积分兑换请求相应::", res);
-      //     if (res?.data && res?.data?.code === 200) {
-      //       this.$message({
-      //         message: "积分兑换成功",
-      //         type: "success",
-      //       });
-      //       this.handleCloseDialog();
-      //     } else {
-      //       this.handleCodeNot200(res, "积分兑换");
-      //     }
-      //   })
-      //   .catch((e) => this.handleRequestError(e));
+      if (this.money == "0" || this.txtLoading) return;
+      this.$api
+        .exchangePoints({
+          totalTopU: this.money,
+          startTime: this.startTime,
+          endTime: this.endTime,
+        })
+        .then((res) => {
+          console.log("::积分兑换请求相应::", res);
+          if (res?.data && res?.data?.code === 200) {
+            this.$message({
+              message: "积分兑换成功",
+              type: "success",
+            });
+            this.handleGetDetail();
+            // this.handleCloseDialog();
+          } else {
+            this.handleCodeNot200(res, "积分兑换");
+          }
+        })
+        .catch((e) => this.handleRequestError(e));
     },
 
     // 菜单选择
     handleSelect(val) {
-      this.rollType = val == 2 ? "free" : "pay";
+      this.rollType = val == "freeRoll" ? "free" : "pay";
       this.activeIndex = val;
     },
     // 辅助函数

@@ -40,34 +40,25 @@ const updatePswd = (data) => {
 const updateFreeRollCount = (data) => {
   return ajax({
     method: "POST",
-    url: "/xxxxx",
+    url: "/userService/modifyUserFreeLottery",
     data,
   });
 };
 
-// 获取奖池列表
-const getGoodsPool = (params) => {
+// 设置  兑换多少积分 可以换一次 免费抽奖次数 以及 抽一次付费将 要多少积分
+const settingGlobalPoint = (data) => {
   return ajax({
-    url: "/xxxxx",
+    method: "POST",
+    url: "/userService/modifyAdminConfig",
+    data,
+  });
+};
+
+const getGlobalSetting = (params) => {
+  console.log(params);
+  return ajax({
+    url: "/userService/getAdminConfig",
     params,
-  });
-};
-
-// 设置奖池，单个设置
-const setGoodsPool = (data) => {
-  return ajax({
-    method: "POST",
-    url: "/xxxxx",
-    data,
-  });
-};
-
-// 兑换积分
-const updatePoint = (data) => {
-  return ajax({
-    method: "POST",
-    url: "/xxxxx",
-    data,
   });
 };
 
@@ -77,7 +68,6 @@ export default {
   getUserList,
   updatePswd,
   updateFreeRollCount,
-  getGoodsPool,
-  setGoodsPool,
-  updatePoint,
+  settingGlobalPoint,
+  getGlobalSetting,
 };
