@@ -186,7 +186,7 @@ export default {
       this.$api
         .getTopUp()
         .then((res) => {
-          console.log("::获取流水响应::", res);
+          // console.log("::获取流水响应::", res);
           if (res?.data && res?.data?.code === 200) {
             this.money = res?.data?.data?.totalTopUp;
             this.startTime = res?.data?.data?.startTime;
@@ -220,9 +220,13 @@ export default {
     handleDoSendEmail() {
       this.btnLoading = true;
       this.$api
-        .sendEmail()
+        .sendEmail({
+          totalTopUp: this.money,
+          startTime: this.startTime,
+          endTime: this.endTime,
+        })
         .then((res) => {
-          console.log("::申请返利响应::", res);
+          // console.log("::申请返利响应::", res);
           if (res?.data && res?.data?.code === 200) {
             this.$message({
               message: "申请成功",
@@ -284,17 +288,17 @@ export default {
       this.dialogFormVisible = false;
       this.form.editUserId = "";
     },
-    // 积分兑换提交 TODO:
+    // 积分兑换提交
     handleSubmit() {
       if (this.money == "0" || this.txtLoading) return;
       this.$api
         .exchangePoints({
-          totalTopU: this.money,
+          totalTopUp: this.money,
           startTime: this.startTime,
           endTime: this.endTime,
         })
         .then((res) => {
-          console.log("::积分兑换请求相应::", res);
+          // console.log("::积分兑换请求相应::", res);
           if (res?.data && res?.data?.code === 200) {
             this.$message({
               message: "积分兑换成功",

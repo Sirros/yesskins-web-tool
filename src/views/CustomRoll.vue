@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import { Local } from "@/utils/storage";
 export default {
   name: "CustomRoll",
   props: {
@@ -62,6 +63,8 @@ export default {
   },
   data() {
     return {
+      user: null,
+
       canvasWidth: "44.3rem",
       canvasHeight: "44.3rem",
       domTop: "20rem",
@@ -70,6 +73,7 @@ export default {
       count: 0, // 剩余免费抽奖次数
       points: 0, // 剩余积分
       ticket: 0, // 单次抽奖积分
+      condition: 0, // 兑换多少积分可以换取一次免费抽奖机会
 
       timer: null,
       loading: false,
@@ -117,7 +121,7 @@ export default {
         background: "#26C0B1",
       },
       activeStyle: {
-        background: "#24ADB2",
+        background: "#ffffff",
       },
     };
   },
@@ -131,7 +135,13 @@ export default {
     },
   },
   created() {
+    const user = Local.get("user");
+    if (!user) {
+      return this.$message.error("登录异常，请重新登录后重试");
+    }
+    this.user = user;
     this.handleGetPool();
+    this.handleGetGlobalSetting();
     this.handleCheckDeviceType();
   },
   methods: {
@@ -140,27 +150,32 @@ export default {
       if (this.rollType === "free") {
         if (this.count === 0) return;
       } else {
+        if (this.points === 0) return;
         if (this.points / this.ticket < 1) return;
       }
-      console.log("开始抽奖{}::");
       // 调用抽奖组件的play方法开始游戏
       this.$refs.myLucky.play();
       // 模拟调用接口异步抽奖
       this.timer = setTimeout(() => {
         // 调用stop停止旋转并传递中奖索引
         this.$refs?.myLucky?.stop();
-      }, 3000);
+      }, 3500);
     },
 
     // 抽奖结束
     handleEndCallback(prize) {
       console.log("抽奖结束{}::", prize);
+      if (prize.label === "再来一次") {
+        this.$message.info("再来一次吧~");
+        return;
+      }
       this.result = Object.values(prize).length ? prize : null;
       if (!Object.values(prize).length) return;
-      if (this.rollType === "free") {
-        this.count = 0;
+      // 如果是免费的，抽完奖，更新一次免费抽奖次数，付费的话，抽完扣积分
+      if (this.poolType === "FREE_LOTTERY") {
+        this.handleUpdateFreeCount();
       } else {
-        this.points -= this.ticket;
+        this.handleUpdatePoint();
       }
       this.handleOpenResult();
     },
@@ -176,9 +191,8 @@ export default {
     },
 
     handleGetPool(type = "free") {
-      console.log(type);
       this.loading = true;
-      console.log("[请求奖池]", type);
+      // console.log("[请求奖池]", type);
       this.handleInitUserInfo();
       this.handleReset();
 
@@ -210,120 +224,69 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
 
-      // const list = [
-      //   {
-      //     id: 2,
-      //     priceName: "aaaaaab",
-      //     probability: 0.5,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 3,
-      //     priceName: "s",
-      //     probability: 0.5,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 4,
-      //     priceName: "测试1",
-      //     probability: 0.11,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 5,
-      //     priceName: "测试1",
-      //     probability: 0.1,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 6,
-      //     priceName: "测试2",
-      //     probability: 0.03,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 7,
-      //     priceName: "测试3",
-      //     probability: 0.5,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 8,
-      //     priceName: "测试4",
-      //     probability: 0.4,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 9,
-      //     priceName: "测试5",
-      //     probability: 0.12,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 10,
-      //     priceName: "da",
-      //     probability: 0.5,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      //   {
-      //     id: 11,
-      //     priceName: "测试7",
-      //     probability: 0.11,
-      //     priceImgUrl:
-      //       "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg",
-      //   },
-      // ];
-      // const newPrizes = [];
-      // list.forEach((prize, idx) => {
-      //   const { priceName, probability, priceImgUrl } = prize;
-      //   // const priceImgUrl =
-      //   //   "https://i.c5game.com/image/u-5542106315dd251120fcae.jpg";
-      //   const { x, y } = this.prizes[idx];
-      //   newPrizes.push({
-      //     x,
-      //     y,
-      //     range: probability,
-      //     label: priceName,
-      //     imgs: [
-      //       {
-      //         src: priceImgUrl,
-      //         width: "92%",
-      //         height: "92%",
-      //         top: "4%",
-      //       },
-      //     ],
-      //     borderRadius: "4px",
-      //     background: "#002976",
-      //   });
-      //   return;
-      // });
-      // this.prizes = newPrizes;
+    // 全局配置
+    handleGetGlobalSetting() {
+      this.$api
+        .getGlobalSetting()
+        .then((res) => {
+          if (res?.data && res?.data?.code === 200) {
+            console.log("::获取全局配置响应::", res);
+            const data = res.data.data;
+            if (data?.length) {
+              data.forEach((item) => {
+                if (item.type === "FREE_LOTTERY_POINT") {
+                  this.condition = Number(item.value);
+                }
+                if (item.type === "LOTTERY_POINT") {
+                  this.ticket = Number(item.value);
+                }
+              });
+            }
+          } else {
+            this.handleCodeNot200(res, "获取全局配置");
+          }
+        })
+        .catch((e) => {
+          this.handleRequestError(e);
+        });
+    },
+
+    // 更新免费抽奖次数
+    handleUpdateFreeCount() {
+      this.$api
+        .userUpdateFreeRollCountUser()
+        .then((res) => {
+          if (res?.data && res?.data?.code !== 200) {
+            this.handleCodeNot200(res, "更新免费抽奖次数");
+            this.handleInitUserInfo();
+          }
+        })
+        .catch((e) => this.handleRequestError(e));
+    },
+
+    // 积分抽奖，更新次数
+    handleUpdatePoint() {
+      this.$api
+        .exchangeTime()
+        .then((res) => {
+          if (res?.data && res?.data?.code !== 200) {
+            this.handleCodeNot200(res, "积分抽奖，更新积分");
+            this.handleInitUserInfo();
+          }
+        })
+        .catch((e) => this.handleRequestError(e));
     },
 
     // 设置展示
     handleInitUserInfo() {
-      // this.count = 1;
-      // this.points = 1300;
-      // this.ticket = 500;
-
       this.$api
         .detail()
         .then((res) => {
           if (res?.data && res?.data?.code === 200) {
             this.points = res?.data?.data?.point;
-
-            // this.points = 1300;
-            // this.ticket = 500;
+            this.count = res?.data?.data?.numberOfFreeLottery;
           } else {
             this.$message({
               message: res?.data?.message || "获取详情失败，请三分钟后重试",
@@ -347,20 +310,15 @@ export default {
 
     sendRollResult() {
       // 发送抽奖结果
-      const { id, range, imgs, label } = this.result;
+      const { label } = this.result;
 
       this.$api
         .sendPrize({
-          id,
           type: this.poolType,
-          imgs,
           priceName: label,
-          probability: range,
-          priceImg: imgs[0].src,
-          priceImgUrl: imgs[0].src,
         })
         .then((res) => {
-          console.log("::发送结果请求响应::", res);
+          // console.log("::发送结果请求响应::", res);
           if (res?.data && res?.data?.code === 200) {
             this.$message({
               message: "发送结果成功",

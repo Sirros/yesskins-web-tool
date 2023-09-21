@@ -36,11 +36,20 @@ const updatePswd = (data) => {
   });
 };
 
-// 更新免费抽奖次数
+// 更新免费抽奖次数-管理员
 const updateFreeRollCount = (data) => {
   return ajax({
     method: "POST",
     url: "/userService/modifyUserFreeLottery",
+    data,
+  });
+};
+
+// 更新免费抽奖次数-用户
+const userUpdateFreeRollCountUser = (data) => {
+  return ajax({
+    method: "POST",
+    url: "/lottery/freeLottery",
     data,
   });
 };
@@ -70,4 +79,5 @@ export default {
   updateFreeRollCount,
   settingGlobalPoint,
   getGlobalSetting,
+  userUpdateFreeRollCountUser,
 };

@@ -150,7 +150,6 @@
                 :auto-upload="false"
                 :show-file-list="false"
                 :on-change="handleUploadChange"
-                :limit="1"
               >
                 <el-button
                   size="small"
@@ -295,7 +294,7 @@ export default {
   },
   created() {
     const user = Local.get("user");
-    console.log("====", user);
+    // console.log("====", user);
     this.user = user;
     this.handleGetUserList();
     this.handleGetGlobalSetting();
@@ -336,7 +335,7 @@ export default {
         .getGlobalSetting()
         .then((res) => {
           if (res?.data && res?.data?.code === 200) {
-            console.log("::获取全局配置响应::", res);
+            // console.log("::获取全局配置响应::", res);
             const data = res.data.data;
             if (data?.length) {
               data.forEach((item) => {
@@ -461,29 +460,15 @@ export default {
         .then((res) => {
           if (res?.data && res?.data?.code === 200) {
             const list = res?.data?.data || [];
-            // "id": 0,
-            // "priceName": "string",
-            // "probability": 0,
-            // "priceImgUrl": "string"
             this.showList = list;
           } else {
-            this.handleCodeNot200(res, "获取用户列表");
+            this.handleCodeNot200(res, "获取奖池列表");
           }
         })
         .catch((e) => this.handleRequestError(e))
         .finally(() => {
           this.pageLoading = false;
         });
-
-      // this.showList = [
-      //   {
-      //     id: "12",
-      //     priceImgUrl:
-      //       "https://psc2.cf2.poecdn.net/08b3868db93b2d1bb024b77c5f8cb5e6154f6743/_next/static/media/chatGPTAvatar.04ed8443.png",
-      //     priceName: "123",
-      //     probability: 0.4,
-      //   },
-      // ];
     },
 
     // 图片上传
@@ -501,7 +486,6 @@ export default {
       const formData = new FormData();
       formData.append("priceName", priceName);
       formData.append("probability", probability);
-      formData.append("priceImg", this.editingFile);
       // type: POINT_LOTTERY FREE_LOTTERY
       formData.append(
         "type",
@@ -509,6 +493,9 @@ export default {
       );
 
       if ("id" in item) {
+        if (this.editingFile) {
+          formData.append("priceImg", this.editingFile);
+        }
         formData.append("id", item.id);
         // 编辑
         this.$api
@@ -523,6 +510,7 @@ export default {
               this.editIdx = -1;
               this.editingFile = null;
               this.editingUrl = "";
+              this.handleGetPool();
             } else {
               this.handleCodeNot200(res, "编辑奖品");
             }
@@ -532,6 +520,7 @@ export default {
             this.isSubmitting = false;
           });
       } else {
+        formData.append("priceImg", this.editingFile);
         // 新增
         this.$api
           .addPrice(formData)
@@ -545,6 +534,7 @@ export default {
               this.editIdx = -1;
               this.editingFile = null;
               this.editingUrl = "";
+              this.handleGetPool();
             } else {
               this.handleCodeNot200(res, "新增奖品");
             }

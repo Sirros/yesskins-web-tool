@@ -9,6 +9,7 @@ import sendEmail from "./home/index";
 import getUserList from "./home/index";
 import updatePswd from "./home/index";
 import updateFreeRollCount from "./home/index";
+import userUpdateFreeRollCountUser from "./home/index";
 import settingGlobalPoint from "./home/index";
 import getGlobalSetting from "./home/index";
 
@@ -33,6 +34,7 @@ export default {
   ...getUserList,
   ...updatePswd,
   ...updateFreeRollCount,
+  ...userUpdateFreeRollCountUser,
   ...settingGlobalPoint,
   ...getGlobalSetting,
 
