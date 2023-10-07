@@ -20,6 +20,14 @@
       >退出登录</el-button
     >
 
+    <div style="position: absolute; height: 60px; right: 140px; top: 20px">
+      <span>用户ID：</span>
+      <span class="mr30">{{ user.userId }}</span>
+
+      <span>可用积分：</span>
+      <span class="blod">{{ (12145243123).toLocaleString() }}</span>
+    </div>
+
     <el-alert
       v-if="activeIndex == 'money'"
       style="width: 30%; margin: auto"
@@ -352,5 +360,13 @@ export default {
 .el-divider {
   width: 90%;
   margin: 24px auto;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409eff;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
 }
 </style>

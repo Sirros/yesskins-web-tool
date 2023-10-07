@@ -35,27 +35,27 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // console.log(to, from, next);
-  // Local.set("user", {
-  //   userId: "1223332212",
-  //   password: "123",
-  //   isAdmin: true,
-  //   time: new Date().getTime(),
-  // });
-  // next();
-
-  const isLogin = Local.get("user");
-  console.log("【router.beforeEach】:::", Local.get("user"));
-  if (!isLogin) {
-    if (to.path !== "/login") {
-      next({ path: "/login" });
-    } else {
-      next();
-    }
-  } else {
-    next();
-  }
+  console.log(to, from, next);
+  Local.set("user", {
+    userId: "1223332212",
+    password: "123",
+    isAdmin: false,
+    time: new Date().getTime(),
+  });
   next();
+
+  // const isLogin = Local.get("user");
+  // console.log("【router.beforeEach】:::", Local.get("user"));
+  // if (!isLogin) {
+  //   if (to.path !== "/login") {
+  //     next({ path: "/login" });
+  //   } else {
+  //     next();
+  //   }
+  // } else {
+  //   next();
+  // }
+  // next();
 });
 
 export default router;
