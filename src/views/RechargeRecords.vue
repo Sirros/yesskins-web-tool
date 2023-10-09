@@ -20,11 +20,14 @@
       >退出登录</el-button
     >
 
-    <div style="position: absolute; height: 60px; right: 140px; top: 20px">
+    <div
+      class="user-info"
+      style="position: absolute; height: 60px; right: 140px; top: 20px"
+    >
       <span>用户ID：</span>
       <span class="mr30">{{ user.userId }}</span>
 
-      <span>可用积分：</span>
+      <span>剩余积分：</span>
       <span class="blod">{{ (12145243123).toLocaleString() }}</span>
     </div>
 
@@ -45,12 +48,8 @@
       >
 
       <div class="mt20 mb20">
-        <el-button
-          type="primary"
-          :disabled="!canApply"
-          @click="handleDoSendEmail"
-          :loading="btnLoading"
-          >申请返利</el-button
+        <el-button type="primary" :disabled="!canExchange" @click="handleSubmit"
+          >积分兑换</el-button
         >
 
         <el-button
@@ -62,15 +61,17 @@
         >
       </div>
 
-      <div>
+      <div class="user-info-mobile">
         <el-divider></el-divider>
+        <span>用户ID：</span>
+        <span class="mr30">{{ user.userId }}</span>
         <span> 剩余积分：{{ integral }} </span>
         <el-button
-          class="ml15"
+          class="ml15 mt20"
           type="plain"
-          @click="handleRedemption"
-          :disabled="!canExchange"
-          >积分兑换</el-button
+          @click="handleDoApply"
+          :disabled="!canApply"
+          >申请返利</el-button
         >
       </div>
 
@@ -82,13 +83,18 @@
     <!-- 兑换积分 dialog -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        <el-form-item label="兑换积分" label-width="70">
+        <el-form-item label="返利积分" label-width="70">
           <el-input v-model="form.integral"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleCloseDialog">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit">确 定</el-button>
+        <el-button
+          type="primary"
+          @click="handleDoSendEmail"
+          :loading="btnLoading"
+          >确 定</el-button
+        >
       </div>
     </el-dialog>
 
@@ -121,7 +127,7 @@ export default {
       money: "0",
       user: null,
 
-      dialogTitle: "积分兑换",
+      dialogTitle: "申请返利",
       dialogFormVisible: false,
       form: {
         integral: "",
@@ -133,8 +139,8 @@ export default {
       startTime: "",
       endTime: "",
 
-      canApply: false,
-      canExchange: false,
+      canApply: false, // 可否申请返利
+      canExchange: false, // 可否兑换积分
     };
   },
   computed: {
@@ -199,7 +205,7 @@ export default {
             this.money = res?.data?.data?.totalTopUp;
             this.startTime = res?.data?.data?.startTime;
             this.endTime = res?.data?.data?.endTime;
-            this.canApply = true;
+            this.canExchange = true;
             this.$nextTick(() => {
               this.handleGetDetail();
             });
@@ -209,7 +215,7 @@ export default {
               type: "warning",
             });
             this.refreshBtnShow = true;
-            this.canApply = false;
+            this.canExchange = false;
           }
         })
         .catch((e) => {
@@ -224,23 +230,27 @@ export default {
         });
     },
 
-    // 申请返现
+    // 申请返利 dialog
+    handleDoApply() {
+      this.dialogFormVisible = true;
+    },
+    // 申请返利
     handleDoSendEmail() {
       this.btnLoading = true;
       this.$api
         .sendEmail({
-          totalTopUp: this.money,
+          totalTopUp: this.form.integral,
           startTime: this.startTime,
           endTime: this.endTime,
         })
         .then((res) => {
-          // console.log("::申请返利响应::", res);
           if (res?.data && res?.data?.code === 200) {
             this.$message({
               message: "申请成功",
               type: "success",
             });
             this.handleGetData();
+            this.dialogFormVisible = false;
           } else {
             this.$message({
               message: res?.data?.message || "请求异常，请联系管理员",
@@ -259,6 +269,10 @@ export default {
           this.btnLoading = false;
         });
     },
+    handleCloseDialog() {
+      this.form.integral = "";
+      this.dialogFormVisible = false;
+    },
 
     handleGetDetail() {
       this.$api
@@ -266,14 +280,14 @@ export default {
         .then((res) => {
           if (res?.data && res?.data?.code === 200) {
             this.integral = res?.data?.data?.point;
-            this.canExchange = true;
+            this.canApply = true;
           } else {
             this.$message({
               message: res?.data?.message || "获取详情，请三分钟后重试",
               type: "warning",
             });
             this.refreshBtnShow = true;
-            this.canExchange = false;
+            this.canApply = false;
           }
         })
         .catch((e) => {
@@ -285,17 +299,6 @@ export default {
         });
     },
 
-    // 积分兑换 dialog
-    handleRedemption() {
-      // this.dialogTitle = "积分兑换";
-      // this.dialogFormVisible = true;
-
-      this.handleSubmit();
-    },
-    handleCloseDialog() {
-      this.dialogFormVisible = false;
-      this.form.editUserId = "";
-    },
     // 积分兑换提交
     handleSubmit() {
       if (this.money == "0" || this.txtLoading) return;
@@ -306,14 +309,12 @@ export default {
           endTime: this.endTime,
         })
         .then((res) => {
-          // console.log("::积分兑换请求相应::", res);
           if (res?.data && res?.data?.code === 200) {
             this.$message({
               message: "积分兑换成功",
               type: "success",
             });
             this.handleGetDetail();
-            // this.handleCloseDialog();
           } else {
             this.handleCodeNot200(res, "积分兑换");
           }
