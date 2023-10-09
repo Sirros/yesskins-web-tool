@@ -65,7 +65,8 @@
         <el-divider></el-divider>
         <span>用户ID：</span>
         <span class="mr30">{{ user.userId }}</span>
-        <span> 剩余积分：{{ integral }} </span>
+        <span> 剩余积分：</span>
+        <span class="blod">{{ integral }} </span>
         <el-button
           class="ml15 mt20"
           type="plain"
