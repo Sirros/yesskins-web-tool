@@ -22,13 +22,27 @@
 
     <div
       class="user-info"
-      style="position: absolute; height: 60px; right: 140px; top: 20px"
+      style="
+        position: absolute;
+        height: 60px;
+        right: 140px;
+        top: 0px;
+        line-height: 60px;
+      "
     >
       <span>用户ID：</span>
       <span class="mr30">{{ user.userId }}</span>
 
       <span>剩余积分：</span>
-      <span class="blod">{{ (12145243123).toLocaleString() }}</span>
+      <span class="blod">{{ integral.toLocaleString() }}</span>
+
+      <el-button
+        class="ml20"
+        type="plain"
+        @click="handleDoApply"
+        :disabled="!canApply"
+        >申请返利</el-button
+      >
     </div>
 
     <el-alert
@@ -65,8 +79,10 @@
         <el-divider></el-divider>
         <span>用户ID：</span>
         <span class="mr30">{{ user.userId }}</span>
+
         <span> 剩余积分：</span>
         <span class="blod">{{ integral }} </span>
+
         <el-button
           class="ml15 mt20"
           type="plain"

@@ -19,15 +19,11 @@ body {
 }
 
 .mr10 {
-  margin-top: 20px !important;
-}
-
-.mr10 {
-  margin-top: 20px !important;
+  margin-right: 20px !important;
 }
 
 .mr15 {
-  margin-top: 20px !important;
+  margin-right: 20px !important;
 }
 
 .mr20 {
@@ -44,6 +40,10 @@ body {
 
 .ml15 {
   margin-left: 15px !important;
+}
+
+.ml20 {
+  margin-left: 20px !important;
 }
 
 .pd10 {
