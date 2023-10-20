@@ -167,6 +167,22 @@
                 placeholder="请输入"
                 :disabled="idx !== editIdx"
               ></el-input>
+
+              <span>奖品数量：</span>
+              <el-input
+                class="w100 mr20"
+                v-model="good.count"
+                placeholder="请输入"
+                :disabled="idx !== editIdx"
+              ></el-input>
+
+              <span>奖品阈值：</span>
+              <el-input
+                class="w100 mr20"
+                v-model="good.threshold"
+                placeholder="请输入"
+                :disabled="idx !== editIdx"
+              ></el-input>
             </div>
 
             <div>
@@ -234,12 +250,20 @@
           <el-input v-model="form.editPassword"></el-input>
         </el-form-item>
         <el-form-item
-          label="免费抽奖次数"
+          label="免费奖池抽奖次数"
           label-width="70"
           type="number"
           v-if="menuTab === 'setting'"
         >
           <el-input v-model="form.freeCount"></el-input>
+        </el-form-item>
+        <el-form-item
+          label="付费奖池抽奖次数"
+          label-width="70"
+          type="number"
+          v-if="menuTab === 'setting'"
+        >
+          <el-input v-model="form.payCount"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -280,6 +304,7 @@ export default {
         editUserId: "",
         editPassword: "",
         freeCount: "",
+        payCount: "",
       },
 
       conditionPoint: "",
@@ -411,6 +436,7 @@ export default {
         .updateFreeRollCount({
           userId: this.form.editUserId,
           numberOfFreeLottery: this.form.freeCount,
+          numberOfPayLottery: this.form.payCount,
         })
         .then((res) => {
           // console.log("::更新免费抽奖次数请求响应::", res);
@@ -616,6 +642,8 @@ export default {
           src: "",
           priceImgUrl: null,
           probability: 0,
+          count: 0, // 数量
+          threshold: 0, // 阈值
           disabled: false,
         });
       } else {
@@ -624,6 +652,8 @@ export default {
           src: "",
           priceImgUrl: null,
           probability: 0,
+          count: 0, // 数量
+          threshold: 0, // 阈值
           disabled: false,
         });
       }

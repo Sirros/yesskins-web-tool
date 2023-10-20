@@ -39,7 +39,7 @@ router.beforeEach((to, from, next) => {
   Local.set("user", {
     userId: "1223332212",
     password: "123",
-    isAdmin: false,
+    isAdmin: true,
     time: new Date().getTime(),
   });
   next();
