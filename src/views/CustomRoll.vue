@@ -160,6 +160,19 @@ export default {
         // 调用stop停止旋转并传递中奖索引
         this.$refs?.myLucky?.stop();
       }, 3500);
+
+      // TODO:
+      // this.$api
+      // .xxx()
+      // .then((res) => {
+      //   // 假设后端返回的中奖索引是0
+      //   const index = 0
+      //   // 调用stop停止旋转并传递中奖索引
+      //   this.$refs.myLucky.stop(index)
+      // })
+      // .finally(() => {
+      //   this.loading = false;
+      // });
     },
 
     // 抽奖结束
