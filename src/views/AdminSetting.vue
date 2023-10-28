@@ -160,13 +160,13 @@
                 >
               </el-upload>
 
-              <span>中奖概率：</span>
+              <!-- <span>中奖概率：</span>
               <el-input
                 class="w100 mr20"
                 v-model="good.probability"
                 placeholder="请输入"
                 :disabled="idx !== editIdx"
-              ></el-input>
+              ></el-input> -->
 
               <span>奖品数量：</span>
               <el-input
@@ -508,10 +508,10 @@ export default {
     // 保存单个奖池编辑请求
     handleSubmitEditPool(item) {
       this.isSubmitting = true;
-      const { priceName, probability } = item;
+      const { priceName } = item;
       const formData = new FormData();
       formData.append("priceName", priceName);
-      formData.append("probability", probability);
+      // formData.append("probability", probability);
       // type: POINT_LOTTERY FREE_LOTTERY
       formData.append(
         "type",
@@ -641,7 +641,7 @@ export default {
           priceName: "",
           src: "",
           priceImgUrl: null,
-          probability: 0,
+          // probability: 0,
           count: 0, // 数量
           threshold: 0, // 阈值
           disabled: false,
@@ -651,7 +651,7 @@ export default {
           priceName: "",
           src: "",
           priceImgUrl: null,
-          probability: 0,
+          // probability: 0,
           count: 0, // 数量
           threshold: 0, // 阈值
           disabled: false,
